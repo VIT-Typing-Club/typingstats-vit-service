@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JwtServiceTest {
-    private JwtService JwtService;
+    private JwtService jwtService;
     private User mockUser;
 
     @BeforeEach
@@ -32,6 +32,10 @@ public class JwtServiceTest {
         String extractedDiscordId = jwtService.extractDiscordId(token);
         assertThat(extractedDiscordId).isEqualTo("1234567890");
 
-        assertThat(jwtService.isTokenValid(token)).isTrue();
+        assertThat(jwtService.isTokenValid(token, mockUser)).isTrue();
+
+        User impostor = new User();
+        impostor.setDiscordId("111111111");
+        assertThat(jwtService.isTokenValid(token, impostor)).isFalse();
     }
 }

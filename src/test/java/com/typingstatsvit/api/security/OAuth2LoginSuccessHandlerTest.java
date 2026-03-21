@@ -67,4 +67,23 @@ class OAuth2LoginSuccessHandlerTest {
 
         assertThat(response.getRedirectedUrl()).isEqualTo("http://localhost:3000/auth-callback?token=fake.jwt.token");
     }
+
+    @Test
+    void shouldNotCreateUserIfAlreadyExists() throws Exception {
+        User existingUser = new User();
+        existingUser.setDiscordId("999888777");
+
+        when(userRepository.findById("999888777"))
+                .thenReturn(Optional.of(existingUser));
+
+        when(jwtService.generateToken(existingUser))
+                .thenReturn("fake.jwt.token");
+
+        successHandler.onAuthenticationSuccess(request, response, authentication);
+
+        verify(userRepository, never()).save(any());
+
+        assertThat(response.getRedirectedUrl())
+                .isEqualTo("http://localhost:3000/auth-callback?token=fake.jwt.token");
+    }
 }

@@ -2,6 +2,7 @@ package com.typingstatsvit.api.security;
 
 import com.typingstatsvit.api.entity.User;
 import com.typingstatsvit.api.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,7 +65,14 @@ class OAuth2LoginSuccessHandlerTest {
         assertThat(savedUser.getUsername()).isEqualTo("new_typer");
         assertThat(savedUser.getAvatarUrl()).isEqualTo("https://cdn.discordapp.com/avatars/999888777/abc123hash.png");
 
-        assertThat(response.getRedirectedUrl()).isEqualTo("http://localhost:3000/auth-callback?token=fake.jwt.token");
+        assertThat(response.getRedirectedUrl())
+                .isEqualTo("http://localhost:3000/auth-callback");
+
+        Cookie cookie = response.getCookie("jwt");
+
+        assertThat(cookie).isNotNull();
+        assertThat(cookie.getValue()).isEqualTo("fake.jwt.token");
+        assertThat(cookie.isHttpOnly()).isTrue();
     }
 
     @Test
@@ -98,6 +106,12 @@ class OAuth2LoginSuccessHandlerTest {
                 .isEqualTo("https://cdn.discordapp.com/avatars/999888777/newhash.png");
 
         assertThat(response.getRedirectedUrl())
-                .isEqualTo("http://localhost:3000/auth-callback?token=fake.jwt.token");
+                .isEqualTo("http://localhost:3000/auth-callback");
+
+        Cookie cookie = response.getCookie("jwt");
+
+        assertThat(cookie).isNotNull();
+        assertThat(cookie.getValue()).isEqualTo("fake.jwt.token");
+        assertThat(cookie.isHttpOnly()).isTrue();
     }
 }

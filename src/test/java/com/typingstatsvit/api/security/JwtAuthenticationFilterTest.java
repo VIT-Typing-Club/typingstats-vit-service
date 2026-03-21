@@ -3,6 +3,7 @@ package com.typingstatsvit.api.security;
 import com.typingstatsvit.api.entity.User;
 import com.typingstatsvit.api.repository.UserRepository;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +43,8 @@ class JwtAuthenticationFilterTest {
     void shouldAuthenticateValidToken() throws Exception {
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("Authorization", "Bearer valid.jwt.token");
+        request.setCookies(new Cookie("jwt", "valid.jwt.token"));
+        assertThat(request.getCookies()).isNotNull();
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         User mockUser = new User();

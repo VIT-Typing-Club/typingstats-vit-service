@@ -43,3 +43,6 @@ spring:
   jwt:
     security-key: ${JWT_SECURITY_KEY}
     expiration: ${JWT_EXPIRATION}
+
+  frontend:
+    url:${FRONTEND_URL}

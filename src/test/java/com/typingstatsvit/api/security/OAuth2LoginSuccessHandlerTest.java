@@ -32,7 +32,7 @@ class OAuth2LoginSuccessHandlerTest {
     private JwtService jwtService;
 
     @InjectMocks
-    private OAuth2LoginSuccessHandlerTest successHandler;
+    private OAuth2LoginSuccessHandler successHandler;
 
     @BeforeEach
     void setUp() {
@@ -69,7 +69,18 @@ class OAuth2LoginSuccessHandlerTest {
     }
 
     @Test
-    void shouldNotCreateUserIfAlreadyExists() throws Exception {
+    void shouldUpdateExistingUserAndRedirectWithToken() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        OAuth2User oAuth2User = mock(OAuth2User.class);
+        when(oAuth2User.getAttribute("id")).thenReturn("999888777");
+        when(oAuth2User.getAttribute("username")).thenReturn("updated_name");
+        when(oAuth2User.getAttribute("avatar")).thenReturn("newhash");
+
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn(oAuth2User);
+
         User existingUser = new User();
         existingUser.setDiscordId("999888777");
 
@@ -81,7 +92,11 @@ class OAuth2LoginSuccessHandlerTest {
 
         successHandler.onAuthenticationSuccess(request, response, authentication);
 
-        verify(userRepository, never()).save(any());
+        verify(userRepository).save(existingUser);
+
+        assertThat(existingUser.getUsername()).isEqualTo("updated_name");
+        assertThat(existingUser.getAvatarUrl())
+                .isEqualTo("https://cdn.discordapp.com/avatars/999888777/newhash.png");
 
         assertThat(response.getRedirectedUrl())
                 .isEqualTo("http://localhost:3000/auth-callback?token=fake.jwt.token");

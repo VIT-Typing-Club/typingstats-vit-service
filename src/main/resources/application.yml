@@ -20,6 +20,10 @@ spring:
     baseline-version: 1
 
   security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}
+      expiration: ${JWT_EXPIRATION}
+
     oauth2:
       client:
         registration:
@@ -40,9 +44,6 @@ spring:
             user-info-uri: https://discord.com/api/users/@me
             user-name-attribute: id
 
-  jwt:
-    security-key: ${JWT_SECURITY_KEY}
-    expiration: ${JWT_EXPIRATION}
-
+application:
   frontend:
-    url:${FRONTEND_URL}
+    url: ${FRONTEND_URL}

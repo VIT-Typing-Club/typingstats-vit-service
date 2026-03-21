@@ -1,4 +1,4 @@
-package com.typingstatsvit.api.service;
+package com.typingstatsvit.api.security;
 
 import com.typingstatsvit.api.entity.User;
 import org.junit.jupiter.api.BeforeEach;

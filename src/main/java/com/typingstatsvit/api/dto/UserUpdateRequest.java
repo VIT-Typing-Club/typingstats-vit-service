@@ -15,7 +15,7 @@ public record UserUpdateRequest(
         String collegeEmail,
 
         @Pattern(
-                regexp = "^[a-zA-Z0-9-]+$",
+                regexp = "^[a-zA-Z0-9-_]+$",
                 message = "mt username can only contain letters, numbers, and hyphens"
         )
         String mtUrl,

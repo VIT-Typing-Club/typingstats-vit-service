@@ -3,6 +3,7 @@ package com.typingstatsvit.api.repository;
 import com.typingstatsvit.api.dto.LeaderboardEntry;
 import com.typingstatsvit.api.entity.Score;
 import com.typingstatsvit.api.entity.TestType;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,7 @@ public interface ScoreRepository extends JpaRepository<Score, String> {
 
     // query dynamically checks if the parameters are null.
     // If testType is provided, it filters by it. If null, it ignores it.
+    @Cacheable(value = "leaderboard", key = "{#testType, #userId, #pageable.pageSize}")
     @Query("""
             SELECT new com.typingstatsvit.api.dto.LeaderboardEntry(
                 s.user.discordId, s.user.username, s.user.avatarUrl, 

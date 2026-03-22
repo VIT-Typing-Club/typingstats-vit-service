@@ -2,7 +2,7 @@ package com.typingstatsvit.api.dto;
 
 import com.typingstatsvit.api.entity.TestType;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public record LeaderboardEntry(
         String discordId,
@@ -12,6 +12,6 @@ public record LeaderboardEntry(
         Double accuracy,
         Double raw,
         TestType testType,
-        LocalDateTime createdAt
+        Instant createdAt
 ) {
 }

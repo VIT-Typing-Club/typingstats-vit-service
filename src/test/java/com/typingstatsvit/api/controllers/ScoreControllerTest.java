@@ -12,7 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -35,10 +35,10 @@ public class ScoreControllerTest {
     @Test
     void shouldReturnOverallLeaderboardWithDefaultLimit() throws Exception {
         LeaderboardEntry entry1 = new LeaderboardEntry(
-                "111", "speed_demon", "url1", 160.5, 99.0, 162.0, TestType.TIME_60, LocalDateTime.now()
+                "111", "speed_demon", "url1", 160.5, 99.0, 162.0, TestType.TIME_60, Instant.now()
         );
         LeaderboardEntry entry2 = new LeaderboardEntry(
-                "222", "slow_poke", "url2", 45.0, 90.0, 45.0, TestType.TIME_60, LocalDateTime.now()
+                "222", "slow_poke", "url2", 45.0, 90.0, 45.0, TestType.TIME_60, Instant.now()
         );
 
         when(scoreRepository.getCustomLeaderboard(isNull(), isNull(), any(Pageable.class)))
@@ -55,7 +55,7 @@ public class ScoreControllerTest {
     @Test
     void shouldFilterLeaderboardByTestType() throws Exception {
         LeaderboardEntry entry = new LeaderboardEntry(
-                "333", "words_master", "url3", 120.0, 100.0, 120.0, TestType.WORDS_10, LocalDateTime.now()
+                "333", "words_master", "url3", 120.0, 100.0, 120.0, TestType.WORDS_10, Instant.now()
         );
 
         when(scoreRepository.getCustomLeaderboard(eq(TestType.WORDS_10), isNull(), any(Pageable.class)))
@@ -72,7 +72,7 @@ public class ScoreControllerTest {
     @Test
     void shouldFilterLeaderboardByUserId() throws Exception {
         LeaderboardEntry entry = new LeaderboardEntry(
-                "999", "just_me", "url4", 100.0, 95.0, 105.0, TestType.TIME_15, LocalDateTime.now()
+                "999", "just_me", "url4", 100.0, 95.0, 105.0, TestType.TIME_15, Instant.now()
         );
 
         when(scoreRepository.getCustomLeaderboard(isNull(), eq("999"), any(Pageable.class)))

@@ -3,6 +3,8 @@ package com.typingstatsvit.api.service;
 import com.typingstatsvit.api.dto.monkeytype.MonkeytypeProfileResponse;
 import com.typingstatsvit.api.entity.User;
 import com.typingstatsvit.api.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,6 +16,8 @@ import java.security.SecureRandom;
 
 @Service
 public class VerificationService {
+
+    private final static Logger log = LoggerFactory.getLogger(VerificationService.class);
 
     private final MonkeytypeClient monkeytypeClient;
     private final UserRepository userRepository;
@@ -32,6 +36,7 @@ public class VerificationService {
         try {
             response = monkeytypeClient.getUserProfile(mtUsername);
         } catch (Exception e) {
+            log.error("Failed to connect to mt api {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to connect to Monkeytype API");
         }
 
@@ -78,7 +83,7 @@ public class VerificationService {
 
             mailSender.send(message);
         } catch (Exception e) {
-            System.err.println("Failed to send email to " + email + ": " + e.getMessage());
+            log.error("failed to send email to {}, because of {}", email, e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send verification email. Please try again.");
         }
     }

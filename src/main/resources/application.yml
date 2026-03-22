@@ -47,3 +47,5 @@ spring:
 application:
   frontend:
     url: ${FRONTEND_URL}
+  monkeytype:
+    base_url: https://api.monkeytype.com

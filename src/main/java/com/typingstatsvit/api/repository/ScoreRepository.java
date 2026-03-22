@@ -3,6 +3,7 @@ package com.typingstatsvit.api.repository;
 import com.typingstatsvit.api.dto.LeaderboardEntry;
 import com.typingstatsvit.api.entity.Score;
 import com.typingstatsvit.api.entity.TestType;
+import com.typingstatsvit.api.entity.User;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, String> {
@@ -27,4 +29,6 @@ public interface ScoreRepository extends JpaRepository<Score, String> {
             AND (:userId IS NULL OR s.user.discordId = :userId)
             """)
     List<LeaderboardEntry> getCustomLeaderboard(TestType testType, String userId, Pageable pageable);
+
+    Optional<Score> findByUserAndTestType(User user, TestType testType);
 }

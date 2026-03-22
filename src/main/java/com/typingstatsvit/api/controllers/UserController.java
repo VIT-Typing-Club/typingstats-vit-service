@@ -3,19 +3,24 @@ package com.typingstatsvit.api.controllers;
 import com.typingstatsvit.api.dto.UserUpdateRequest;
 import com.typingstatsvit.api.entity.User;
 import com.typingstatsvit.api.repository.UserRepository;
+import com.typingstatsvit.api.service.SyncService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
     private UserRepository userRepository;
+    private SyncService syncService;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, SyncService syncService) {
         this.userRepository = userRepository;
+        this.syncService = syncService;
     }
 
     @GetMapping("/@me")
@@ -52,5 +57,11 @@ public class UserController {
 
         User savedUser = userRepository.save(currentUser);
         return ResponseEntity.ok(savedUser);
+    }
+
+    @PostMapping("/@me/sync")
+    public ResponseEntity<Map<String, String>> syncScores(@AuthenticationPrincipal User currentUser) {
+        syncService.performManualSync(currentUser);
+        return ResponseEntity.ok(Map.of("message", "Scores successfully synced with Monkeytype"));
     }
 }

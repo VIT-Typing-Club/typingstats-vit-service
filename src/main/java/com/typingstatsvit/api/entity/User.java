@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -61,4 +62,10 @@ public class User {
 
     @Column(name = "created_at", nullable = false, updatable = false, insertable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "last_manual_sync")
+    private Instant lastManualSync;
+
+    @Column(name = "last_auto_sync")
+    private Instant lastAutoSync;
 }

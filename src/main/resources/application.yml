@@ -63,3 +63,5 @@ application:
     base_url: https://api.monkeytype.com
   typegg:
     base_url: https://api.typegg.io
+  admins:
+    - "696663007023071233"

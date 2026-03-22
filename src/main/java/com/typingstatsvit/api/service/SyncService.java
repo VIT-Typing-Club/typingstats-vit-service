@@ -7,6 +7,8 @@ import com.typingstatsvit.api.entity.TestType;
 import com.typingstatsvit.api.entity.User;
 import com.typingstatsvit.api.repository.ScoreRepository;
 import com.typingstatsvit.api.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +22,8 @@ import java.util.*;
 
 @Service
 public class SyncService {
+
+    private static final Logger log = LoggerFactory.getLogger(SyncService.class);
 
     private final MonkeytypeClient monkeytypeClient;
     private final ScoreRepository scoreRepository;
@@ -49,16 +53,18 @@ public class SyncService {
 
         user.setLastManualSync(Instant.now());
         userRepository.save(user);
+        log.info("Manual Sync successful user:{} ", user.getDiscordId());
 
         evictCacheIfChanged(dataChanged);
     }
 
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 600000)
     @Transactional
     public void performAutoSyncTrickle() {
         List<User> staleUsers = userRepository.findTop5ByMtVerifiedTrueAndCollegeVerifiedTrueOrderByLastAutoSyncAsc();
         boolean anyDataChanged = false;
 
+        log.info("Starting auto-sync trickle for {} users...", staleUsers.size());
         for (User user : staleUsers) {
             try {
                 if (fetchAndUpdateAllScores(user)) {
@@ -66,8 +72,9 @@ public class SyncService {
                 }
                 user.setLastAutoSync(Instant.now());
                 userRepository.save(user);
+                log.info("Successfully updated scores for user: {}", user.getDiscordId());
             } catch (Exception e) {
-                System.err.println("Auto-sync failed for user: " + user.getDiscordId() + " - " + e.getMessage());
+                log.error("Auto-sync failed for user: {} - Reason: {}", user.getDiscordId(), e.getMessage());
             }
         }
 

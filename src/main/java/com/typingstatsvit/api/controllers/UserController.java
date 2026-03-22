@@ -6,6 +6,7 @@ import com.typingstatsvit.api.entity.User;
 import com.typingstatsvit.api.repository.ScoreRepository;
 import com.typingstatsvit.api.repository.UserRepository;
 import com.typingstatsvit.api.service.SyncService;
+import com.typingstatsvit.api.service.TypeggSyncService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,11 +24,13 @@ public class UserController {
     private final ScoreRepository scoreRepository;
 
     private final SyncService syncService;
+    private final TypeggSyncService typeggSyncService;
 
-    public UserController(UserRepository userRepository, SyncService syncService, ScoreRepository scoreRepository) {
+    public UserController(UserRepository userRepository, SyncService syncService, ScoreRepository scoreRepository, TypeggSyncService typeggSyncService) {
         this.userRepository = userRepository;
         this.scoreRepository = scoreRepository;
         this.syncService = syncService;
+        this.typeggSyncService = typeggSyncService;
     }
 
     @GetMapping("/@me")
@@ -84,5 +87,11 @@ public class UserController {
                 ));
 
         return ResponseEntity.ok(ranks);
+    }
+
+    @PostMapping("/@me/typegg/sync")
+    public ResponseEntity<Map<String, String>> syncTypeggScores(@AuthenticationPrincipal User currentUser) {
+        typeggSyncService.performManualSync(currentUser);
+        return ResponseEntity.ok(Map.of("message", "TypeGG daily score successfully synced"));
     }
 }

@@ -35,7 +35,7 @@ public class TypeggScore {
 
     private Double accuracy;
     private Double raw;
-    private Double consistency;
+    private Double pp;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

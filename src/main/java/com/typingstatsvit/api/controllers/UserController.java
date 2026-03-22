@@ -1,7 +1,9 @@
 package com.typingstatsvit.api.controllers;
 
+import com.typingstatsvit.api.dto.UserRankProjection;
 import com.typingstatsvit.api.dto.UserUpdateRequest;
 import com.typingstatsvit.api.entity.User;
+import com.typingstatsvit.api.repository.ScoreRepository;
 import com.typingstatsvit.api.repository.UserRepository;
 import com.typingstatsvit.api.service.SyncService;
 import jakarta.validation.Valid;
@@ -9,17 +11,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    private UserRepository userRepository;
-    private SyncService syncService;
+    private final UserRepository userRepository;
+    private final ScoreRepository scoreRepository;
 
-    public UserController(UserRepository userRepository, SyncService syncService) {
+    private final SyncService syncService;
+
+    public UserController(UserRepository userRepository, SyncService syncService, ScoreRepository scoreRepository) {
         this.userRepository = userRepository;
+        this.scoreRepository = scoreRepository;
         this.syncService = syncService;
     }
 
@@ -63,5 +70,19 @@ public class UserController {
     public ResponseEntity<Map<String, String>> syncScores(@AuthenticationPrincipal User currentUser) {
         syncService.performManualSync(currentUser);
         return ResponseEntity.ok(Map.of("message", "Scores successfully synced with Monkeytype"));
+    }
+
+    @GetMapping("/@me/ranks")
+    public ResponseEntity<Map<String, Long>> getCurrentUserRanks(@AuthenticationPrincipal User currentUser) {
+
+        List<UserRankProjection> projections = scoreRepository.getUserRanks(currentUser.getDiscordId());
+
+        Map<String, Long> ranks = projections.stream()
+                .collect(Collectors.toMap(
+                        UserRankProjection::getTestType,
+                        UserRankProjection::getUserRank
+                ));
+
+        return ResponseEntity.ok(ranks);
     }
 }

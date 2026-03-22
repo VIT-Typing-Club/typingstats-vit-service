@@ -1,6 +1,7 @@
 package com.typingstatsvit.api.repository;
 
 import com.typingstatsvit.api.dto.LeaderboardEntry;
+import com.typingstatsvit.api.dto.UserRankProjection;
 import com.typingstatsvit.api.entity.Score;
 import com.typingstatsvit.api.entity.TestType;
 import com.typingstatsvit.api.entity.User;
@@ -8,6 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -31,4 +33,14 @@ public interface ScoreRepository extends JpaRepository<Score, String> {
     List<LeaderboardEntry> getCustomLeaderboard(TestType testType, String userId, Pageable pageable);
 
     Optional<Score> findByUserAndTestType(User user, TestType testType);
+
+    @Query(value = """
+            SELECT test_type AS testType, user_rank AS userRank
+            FROM (
+                SELECT test_type, user_id, RANK() OVER (PARTITION BY test_type ORDER BY wpm DESC) as user_rank
+                FROM scores
+            ) ranked_scores
+            WHERE user_id = :userId
+            """, nativeQuery = true)
+    List<UserRankProjection> getUserRanks(@Param("userId") String userId);
 }

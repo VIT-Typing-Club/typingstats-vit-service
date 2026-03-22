@@ -68,4 +68,10 @@ public class User {
 
     @Column(name = "last_auto_sync")
     private Instant lastAutoSync;
+
+    @Column(name = "typegg_id")
+    private String typeggId;
+
+    @Column(name = "typegg_username")
+    private String typeggUsername;
 }

@@ -61,3 +61,5 @@ application:
     url: ${FRONTEND_URL}
   monkeytype:
     base_url: https://api.monkeytype.com
+  typegg:
+    base_url: https://api.typegg.io

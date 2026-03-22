@@ -3,6 +3,7 @@ package com.typingstatsvit.api.controllers;
 import com.typingstatsvit.api.dto.ConfirmOtpRequest;
 import com.typingstatsvit.api.dto.SendOtpRequest;
 import com.typingstatsvit.api.dto.monkeytype.MtVerifyRequest;
+import com.typingstatsvit.api.dto.typegg.TypeggVerifyRequest;
 import com.typingstatsvit.api.entity.User;
 import com.typingstatsvit.api.service.VerificationService;
 import jakarta.validation.Valid;
@@ -51,5 +52,14 @@ public class VerificationController {
     ) {
         verificationService.confirmCollegeEmailOtp(currentUser, request.code());
         return ResponseEntity.ok(Map.of("message", "Email verified successfully"));
+    }
+
+    @PostMapping("/typegg")
+    public ResponseEntity<Map<String, String>> verifyTypegg(
+            @AuthenticationPrincipal User currentUser,
+            @Valid @RequestBody TypeggVerifyRequest request
+    ) {
+        verificationService.verifyTypeggProfile(currentUser, request.username());
+        return ResponseEntity.ok(Map.of("message", "TypeGG account linked successfully"));
     }
 }

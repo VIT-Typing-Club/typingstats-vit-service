@@ -1,6 +1,7 @@
 package com.typingstatsvit.api.service;
 
 import com.typingstatsvit.api.dto.monkeytype.MonkeytypeProfileResponse;
+import com.typingstatsvit.api.dto.typegg.TypeggProfileResponse;
 import com.typingstatsvit.api.entity.User;
 import com.typingstatsvit.api.repository.UserRepository;
 import org.slf4j.Logger;
@@ -22,11 +23,13 @@ public class VerificationService {
     private final MonkeytypeClient monkeytypeClient;
     private final UserRepository userRepository;
     private final JavaMailSender mailSender;
+    private final TypeggClient typeggClient;
 
-    public VerificationService(MonkeytypeClient monkeytypeClient, UserRepository userRepository, JavaMailSender mailSender) {
+    public VerificationService(MonkeytypeClient monkeytypeClient, UserRepository userRepository, JavaMailSender mailSender, TypeggClient typeggClient) {
         this.monkeytypeClient = monkeytypeClient;
         this.userRepository = userRepository;
         this.mailSender = mailSender;
+        this.typeggClient = typeggClient;
     }
 
     @Transactional
@@ -96,5 +99,35 @@ public class VerificationService {
         user.setCollegeVerified(true);
         user.setCollegeCode(null);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void verifyTypeggProfile(User user, String submittedUsername) {
+        TypeggProfileResponse response;
+
+        try {
+            response = typeggClient.getUserProfile(submittedUsername);
+        } catch (Exception e) {
+            log.error("Typegg profile not found for user {}", submittedUsername);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "TypeGG profile not found. Please check the username.");
+        }
+
+        if (response == null || response.userId() == null) {
+            log.error("Invalid response from typegg api");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid response from TypeGG API.");
+        }
+
+        String discordName = user.getUsername();
+        boolean usernameMatches = discordName.equalsIgnoreCase(response.username());
+
+        if (!usernameMatches) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Verification failed. Your TypeGG username must match your Discord username (" + discordName + ").");
+        }
+
+        user.setTypeggId(response.userId());
+        user.setTypeggUsername(response.username());
+        userRepository.save(user);
+        log.info("verified typegg profile for {}", user.getDiscordId());
     }
 }

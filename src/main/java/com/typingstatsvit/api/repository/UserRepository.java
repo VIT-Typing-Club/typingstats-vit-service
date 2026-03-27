@@ -8,5 +8,5 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, String> {
     List<User> findTop5ByMtVerifiedTrueAndCollegeVerifiedTrueOrderByLastAutoSyncAsc();
 
-    List<User> findTop10ByTypeggIdIsNotNullOrderByLastTypeggSyncAsc();
+    List<User> findTop10ByTypeggIdIsNotNullOrderByLastTypeggAutoSyncAsc();
 }

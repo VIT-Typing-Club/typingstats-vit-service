@@ -4,7 +4,6 @@ import com.typingstatsvit.api.entity.User;
 import com.typingstatsvit.api.security.JwtAuthenticationFilter;
 import com.typingstatsvit.api.security.OAuth2LoginSuccessHandler;
 import jakarta.servlet.DispatcherType;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -29,17 +28,18 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private final ApplicationProperties applicationProperties;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler, ApplicationProperties applicationProperties) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
+        this.applicationProperties = applicationProperties;
     }
-
-    @Value("${application.admins:}")
-    private List<String> adminDiscordIds;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        List<String> adminDiscordIds = applicationProperties.getAdmins();
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -51,7 +51,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/api/scores/leaderboard"
+                                "/api/scores/leaderboard",
+                                "/api/scores/typegg/daily"
                         ).permitAll()
                         .requestMatchers("/api/admin/**").access((authenticationSupplier, requestContext) -> {
                             Authentication authentication = authenticationSupplier.get();
@@ -60,6 +61,10 @@ public class SecurityConfig {
                                 return new AuthorizationDecision(false);
                             }
 
+                            System.out.println("LISTING ADMINS");
+                            for (String admin : adminDiscordIds) {
+                                System.out.println(admin);
+                            }
                             User currentUser = (User) authentication.getPrincipal();
                             boolean isAdmin = adminDiscordIds.contains(currentUser.getDiscordId());
 

@@ -75,6 +75,9 @@ public class User {
     @Column(name = "typegg_username")
     private String typeggUsername;
 
-    @Column(name = "last_typegg_sync")
-    private Instant lastTypeggSync;
+    @Column(name = "last_typegg_auto_sync")
+    private Instant lastTypeggAutoSync;
+
+    @Column(name = "last_typegg_manual_sync")
+    private Instant lastTypeggManualSync;
 }

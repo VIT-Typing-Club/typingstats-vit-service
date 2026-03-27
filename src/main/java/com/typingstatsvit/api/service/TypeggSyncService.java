@@ -93,12 +93,18 @@ public class TypeggSyncService {
         if (activeQuoteOpt.isEmpty()) return;
 
         DailyQuote activeQuote = activeQuoteOpt.get();
-        List<User> staleUsers = userRepository.findTop10ByTypeggIdIsNotNullOrderByLastTypeggSyncAsc();
+        List<User> staleUsers = userRepository.findTop10ByTypeggIdIsNotNullOrderByLastTypeggAutoSyncAsc();
 
         for (User user : staleUsers) {
+            log.info("Checking user {}", user.getDiscordId());
+            if (user.getLastTypeggAutoSync() != null &&
+                    user.getLastTypeggAutoSync().plus(1, ChronoUnit.HOURS).isAfter(Instant.now())) {
+                continue;
+            }
+
             try {
                 syncUserForQuote(user, activeQuote);
-                user.setLastTypeggSync(Instant.now());
+                user.setLastTypeggAutoSync(Instant.now());
                 userRepository.save(user);
             } catch (Exception e) {
                 log.error("Failed TypeGG sync for user {}: {}", user.getDiscordId(), e.getMessage());
@@ -117,12 +123,18 @@ public class TypeggSyncService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "TypeGG account not linked.");
         }
 
+        if (user.getLastTypeggManualSync() != null &&
+                user.getLastTypeggManualSync().plus(1, ChronoUnit.MINUTES).isAfter(Instant.now())) {
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS,
+                    "Sync is on cooldown. Please wait 1 minute between manual refreshes.");
+        }
+
         DailyQuote activeQuote = dailyQuoteRepository.findActiveQuote(Instant.now())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active daily quote found."));
 
         boolean foundScore = syncUserForQuote(user, activeQuote);
 
-        user.setLastTypeggSync(Instant.now());
+        user.setLastTypeggManualSync(Instant.now());
         userRepository.save(user);
 
         if (!foundScore) {
@@ -144,7 +156,8 @@ public class TypeggSyncService {
         DailyQuoteDto quoteDto = new DailyQuoteDto(
                 activeQuote.getText(),
                 activeQuote.getSourceTitle(),
-                activeQuote.getDifficulty()
+                activeQuote.getDifficulty(),
+                activeQuote.getEndDate()
         );
 
         List<TypeggLeaderboardEntry> leaderboard = scores.stream()

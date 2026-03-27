@@ -1,7 +1,6 @@
 package com.typingstatsvit.api.controllers;
 
 import com.typingstatsvit.api.entity.DailyQuote;
-import com.typingstatsvit.api.service.SyncService;
 import com.typingstatsvit.api.service.TypeggSyncService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +14,9 @@ import java.util.Map;
 public class AdminController {
 
     private final TypeggSyncService typeggSyncService;
-    private final SyncService syncService;
 
-    public AdminController(TypeggSyncService typeggSyncService, SyncService syncService) {
+    public AdminController(TypeggSyncService typeggSyncService) {
         this.typeggSyncService = typeggSyncService;
-        this.syncService = syncService;
     }
 
     @PostMapping("/typegg/quote/sync")

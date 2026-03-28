@@ -1,5 +1,6 @@
 package com.typingstatsvit.api.controllers;
 
+import com.typingstatsvit.api.dto.PublicProfileDto;
 import com.typingstatsvit.api.dto.UserRankProjection;
 import com.typingstatsvit.api.dto.UserUpdateRequest;
 import com.typingstatsvit.api.entity.User;
@@ -8,9 +9,12 @@ import com.typingstatsvit.api.repository.UserRepository;
 import com.typingstatsvit.api.service.SyncService;
 import com.typingstatsvit.api.service.TypeggSyncService;
 import jakarta.validation.Valid;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,7 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
 
+    @CacheEvict(value = "leaderboard", allEntries = true)
     @PatchMapping("/@me")
     public ResponseEntity<User> updateCurrentUser(
             @AuthenticationPrincipal User currentUser,
@@ -93,5 +98,24 @@ public class UserController {
     public ResponseEntity<Map<String, String>> syncTypeggScores(@AuthenticationPrincipal User currentUser) {
         typeggSyncService.performManualSync(currentUser);
         return ResponseEntity.ok(Map.of("message", "TypeGG daily score successfully synced"));
+    }
+
+    @GetMapping("/{username}")
+    public ResponseEntity<PublicProfileDto> getPublicProfile(@PathVariable String username) {
+        return userRepository.findByUsername(username)
+                .map(user -> new PublicProfileDto(
+                        user.getDisplayName(),
+                        user.getUsername(),
+                        user.getAvatarUrl(),
+                        user.getMtUrl(),
+                        user.getMtVerified(),
+                        user.getCollegeVerified(),
+                        user.getTypeggUsername(),
+                        user.getLinkedinUrl(),
+                        user.getGithubUrl(),
+                        user.getInstagramUrl()
+                ))
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 }

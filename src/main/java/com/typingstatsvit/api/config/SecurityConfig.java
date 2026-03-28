@@ -52,7 +52,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/scores/leaderboard",
-                                "/api/scores/typegg/daily"
+                                "/api/scores/typegg/daily",
+                                "/api/users/{username}"
                         ).permitAll()
                         .requestMatchers("/api/admin/**").access((authenticationSupplier, requestContext) -> {
                             Authentication authentication = authenticationSupplier.get();
@@ -87,7 +88,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

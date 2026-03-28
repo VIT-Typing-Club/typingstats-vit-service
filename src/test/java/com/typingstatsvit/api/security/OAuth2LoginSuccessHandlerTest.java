@@ -66,7 +66,7 @@ class OAuth2LoginSuccessHandlerTest {
         assertThat(savedUser.getAvatarUrl()).isEqualTo("https://cdn.discordapp.com/avatars/999888777/abc123hash.png");
 
         assertThat(response.getRedirectedUrl())
-                .isEqualTo("http://localhost:3000/auth-callback");
+                .isEqualTo("http://localhost:3000/");
 
         Cookie cookie = response.getCookie("jwt");
 
@@ -106,7 +106,7 @@ class OAuth2LoginSuccessHandlerTest {
                 .isEqualTo("https://cdn.discordapp.com/avatars/999888777/newhash.png");
 
         assertThat(response.getRedirectedUrl())
-                .isEqualTo("http://localhost:3000/auth-callback");
+                .isEqualTo("http://localhost:3000/");
 
         Cookie cookie = response.getCookie("jwt");
 

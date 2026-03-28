@@ -45,7 +45,7 @@ public class SyncService {
         }
 
         if (user.getLastManualSync() != null &&
-                user.getLastManualSync().plus(5, ChronoUnit.MINUTES).isAfter(Instant.now())) {
+                user.getLastManualSync().plus(1, ChronoUnit.MINUTES).isAfter(Instant.now())) {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Refresh on cooldown. Please wait 5 minutes.");
         }
 

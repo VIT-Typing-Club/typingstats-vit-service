@@ -127,7 +127,7 @@ public class SyncService {
 
         if (existingOpt.isPresent()) {
             Score existing = existingOpt.get();
-            if (existing.getWpm() < newMtScore.wpm() || !existing.getWpm().equals(newMtScore.wpm())) {
+            if (newMtScore.wpm() > existing.getWpm()) {
                 existing.setWpm(newMtScore.wpm());
                 existing.setAccuracy(newMtScore.acc());
                 existing.setRaw(newMtScore.raw());
@@ -152,6 +152,7 @@ public class SyncService {
 
     private void evictCacheIfChanged(boolean dataChanged) {
         if (dataChanged && cacheManager.getCache("leaderboard") != null) {
+            log.info("Leaderboard cache evicted due to score updates");
             cacheManager.getCache("leaderboard").clear();
         }
     }

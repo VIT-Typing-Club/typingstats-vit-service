@@ -21,6 +21,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -113,7 +114,7 @@ public class UserControllerTest {
         when(userRepository.save(mockUser)).thenReturn(mockUser);
 
         UserUpdateRequest updatePayload = new UserUpdateRequest(
-                null, "new@vit.ac.in", "newmt", null, null
+                null, "new@vitstudent.ac.in", "newmt", null, null
         );
 
         Cookie jwtCookie = new Cookie("jwt", fakeToken);
@@ -122,8 +123,9 @@ public class UserControllerTest {
                         .cookie(jwtCookie)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatePayload)))
+                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.collegeEmail").value("new@vit.ac.in"))
+                .andExpect(jsonPath("$.collegeEmail").value("new@vitstudent.ac.in"))
                 .andExpect(jsonPath("$.collegeVerified").value(false))
                 .andExpect(jsonPath("$.mtUrl").value("newmt"))
                 .andExpect(jsonPath("$.mtVerified").value(false));

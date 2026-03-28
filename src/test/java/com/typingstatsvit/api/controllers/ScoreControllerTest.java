@@ -35,10 +35,10 @@ public class ScoreControllerTest {
     @Test
     void shouldReturnOverallLeaderboardWithDefaultLimit() throws Exception {
         LeaderboardEntry entry1 = new LeaderboardEntry(
-                "111", "speed_demon", "url1", 160.5, 99.0, 162.0, TestType.TIME_60, Instant.now()
+                "111", "speed", "speed_demon", "url1", 160.5, 99.0, 162.0, TestType.TIME_60, Instant.now()
         );
         LeaderboardEntry entry2 = new LeaderboardEntry(
-                "222", "slow_poke", "url2", 45.0, 90.0, 45.0, TestType.TIME_60, Instant.now()
+                "222", "slow", "slow_poke", "url2", 45.0, 90.0, 45.0, TestType.TIME_60, Instant.now()
         );
 
         when(scoreRepository.getCustomLeaderboard(isNull(), isNull(), any(Pageable.class)))
@@ -48,14 +48,24 @@ public class ScoreControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].username").value("speed_demon"))
+                .andExpect(jsonPath("$[0].displayName").value("speed"))
                 .andExpect(jsonPath("$[0].wpm").value(160.5))
-                .andExpect(jsonPath("$[1].username").value("slow_poke"));
+                .andExpect(jsonPath("$[1].username").value("slow_poke"))
+                .andExpect(jsonPath("$[1].displayName").value("slow"));
     }
 
     @Test
     void shouldFilterLeaderboardByTestType() throws Exception {
         LeaderboardEntry entry = new LeaderboardEntry(
-                "333", "words_master", "url3", 120.0, 100.0, 120.0, TestType.WORDS_10, Instant.now()
+                "333",
+                "Words Master",
+                "words_master",
+                "url3",
+                120.0,
+                100.0,
+                120.0,
+                TestType.WORDS_10,
+                Instant.now()
         );
 
         when(scoreRepository.getCustomLeaderboard(eq(TestType.WORDS_10), isNull(), any(Pageable.class)))
@@ -66,13 +76,22 @@ public class ScoreControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].testType").value("WORDS_10"))
-                .andExpect(jsonPath("$[0].username").value("words_master"));
+                .andExpect(jsonPath("$[0].username").value("words_master"))
+                .andExpect(jsonPath("$[0].displayName").value("Words Master"));
     }
 
     @Test
     void shouldFilterLeaderboardByUserId() throws Exception {
         LeaderboardEntry entry = new LeaderboardEntry(
-                "999", "just_me", "url4", 100.0, 95.0, 105.0, TestType.TIME_15, Instant.now()
+                "999",
+                "Just Me",
+                "just_me",
+                "url4",
+                100.0,
+                95.0,
+                105.0,
+                TestType.TIME_15,
+                Instant.now()
         );
 
         when(scoreRepository.getCustomLeaderboard(isNull(), eq("999"), any(Pageable.class)))

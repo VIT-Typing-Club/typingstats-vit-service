@@ -6,6 +6,7 @@ import java.time.Instant;
 
 public record LeaderboardEntry(
         String discordId,
+        String displayName,
         String username,
         String avatarUrl,
         Double wpm,

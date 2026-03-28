@@ -164,6 +164,8 @@ public class TypeggSyncService {
                 .map(score -> new TypeggLeaderboardEntry(
                         score.getUser().getDiscordId(),
                         score.getUser().getUsername(),
+                        score.getUser().getDisplayName(),
+                        score.getUser().getAvatarUrl(),
                         score.getUser().getTypeggUsername(),
                         score.getWpm(),
                         score.getAccuracy(),

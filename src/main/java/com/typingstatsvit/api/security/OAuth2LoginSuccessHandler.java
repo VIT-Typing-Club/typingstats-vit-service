@@ -63,7 +63,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        String targetUrl = frontendUrl + "/auth-callback";
+        String targetUrl = frontendUrl + "/";
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }

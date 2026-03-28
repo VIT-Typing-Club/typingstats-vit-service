@@ -51,6 +51,8 @@ public class SecurityConfig {
                                 "/api/health",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
+                                "/docs.html",
+                                "/v3/api-docs/**",
                                 "/v3/api-docs/**",
                                 "/api/scores/leaderboard",
                                 "/api/scores/typegg/daily",

@@ -10,6 +10,7 @@ public record PublicProfileDto(
         String typeggUsername,
         String linkedinUrl,
         String githubUrl,
-        String instagramUrl
+        String instagramUrl,
+        String xUrl
 ) {
 }

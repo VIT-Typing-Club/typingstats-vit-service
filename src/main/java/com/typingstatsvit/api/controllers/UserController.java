@@ -120,7 +120,8 @@ public class UserController {
                         user.getTypeggUsername(),
                         user.getLinkedinUrl(),
                         user.getGithubUrl(),
-                        user.getInstagramUrl()
+                        user.getInstagramUrl(),
+                        user.getXUrl()
                 ))
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));

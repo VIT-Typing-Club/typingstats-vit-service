@@ -81,6 +81,13 @@ public class UserController {
         return ResponseEntity.ok(savedUser);
     }
 
+    @CacheEvict(value = "leaderboard", allEntries = true)
+    @DeleteMapping("/@me")
+    public ResponseEntity<Map<String, String>> deleteAccount(@AuthenticationPrincipal User currentUser) {
+        userRepository.deleteById(currentUser.getDiscordId());
+        return ResponseEntity.ok(Map.of("Message", "Deleted User successfully."));
+    }
+
     @PostMapping("/@me/sync")
     public ResponseEntity<Map<String, String>> syncScores(@AuthenticationPrincipal User currentUser) {
         syncService.performManualSync(currentUser);

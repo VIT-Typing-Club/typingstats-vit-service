@@ -1,0 +1,32 @@
+name: Deploy Spring Service
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: [ self-hosted, backend ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t typingstats-service .
+
+      - name: Stop and remove old container
+        run: |
+          docker stop typingstats-service || true
+          docker rm typingstats-service || true
+
+      - name: Run new container
+        run: |
+          docker run -d \
+            --name typingstats-service \
+            -p 5000:8080 \
+            --env-file /srv/typingstats/service/.env \
+            --restart unless-stopped \
+            typingstats-service

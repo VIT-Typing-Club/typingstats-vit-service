@@ -46,7 +46,6 @@ spring:
             authorization-grant-type: authorization_code
             scope:
               - identify
-              - email
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             client-name: Discord
         provider:

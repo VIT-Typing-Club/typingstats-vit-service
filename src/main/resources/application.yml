@@ -63,3 +63,6 @@ application:
     base_url: https://api.typegg.io
   admins:
     - "696663007023071233"
+
+server:
+  forward-headers-strategy: framework

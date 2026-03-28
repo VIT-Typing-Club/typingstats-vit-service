@@ -82,7 +82,7 @@ public class UserControllerTest {
         when(userRepository.save(mockUser)).thenReturn(mockUser);
 
         UserUpdateRequest updatePayload = new UserUpdateRequest(
-                "kablow", null, null, null, "kablow"
+                "kablow", null, null, null, "kablow", "insta_kablow", "x_kablow"
         );
 
         Cookie jwtCookie = new Cookie("jwt", fakeToken);
@@ -93,7 +93,9 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.displayName").value("kablow"))
                 .andExpect(jsonPath("$.githubUrl").value("kablow"))
-                .andExpect(jsonPath("$.username").value("kaboom")); // username is not update
+                .andExpect(jsonPath("$.instagramUrl").value("insta_kablow"))
+                .andExpect(jsonPath("$.xUrl").value("x_kablow"))
+                .andExpect(jsonPath("$.username").value("kaboom"));
     }
 
     @Test
@@ -114,7 +116,7 @@ public class UserControllerTest {
         when(userRepository.save(mockUser)).thenReturn(mockUser);
 
         UserUpdateRequest updatePayload = new UserUpdateRequest(
-                null, "new@vitstudent.ac.in", "newmt", null, null
+                null, "new@vitstudent.ac.in", "newmt", null, null, null, null
         );
 
         Cookie jwtCookie = new Cookie("jwt", fakeToken);
@@ -147,12 +149,15 @@ public class UserControllerTest {
         // 1. Email doesn't end in @vit.ac.in
         // 2. MT URL profile name has spaces
         // 3. GitHub username has spaces (invalid)
+        // 4 & 5. Padded with nulls for instagram and x
         UserUpdateRequest badPayload = new UserUpdateRequest(
                 "charliekirk",
                 "charliekirk@gmail.com",
                 "name with spaces",
                 "valid-linkedin-name",
-                "name with spaces"
+                "name with spaces",
+                null,
+                null
         );
 
         mockMvc.perform(patch("/api/users/@me")

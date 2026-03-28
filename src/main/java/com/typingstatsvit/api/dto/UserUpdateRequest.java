@@ -30,6 +30,8 @@ public record UserUpdateRequest(
                 regexp = "^[a-zA-Z0-9-]+$",
                 message = "GitHub username can only contain letters, numbers, and hyphens"
         )
-        String githubUrl
+        String githubUrl,
+        String instagramUrl,
+        String xUrl
 ) {
 }

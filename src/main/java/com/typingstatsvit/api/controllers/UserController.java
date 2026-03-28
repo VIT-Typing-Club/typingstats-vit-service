@@ -70,6 +70,13 @@ public class UserController {
             currentUser.setGithubUrl(updateRequest.githubUrl());
         }
 
+        if (updateRequest.instagramUrl() != null) {
+            currentUser.setInstagramUrl(updateRequest.instagramUrl());
+        }
+
+        if (updateRequest.xUrl() != null) {
+            currentUser.setXUrl(updateRequest.xUrl());
+        }
         User savedUser = userRepository.save(currentUser);
         return ResponseEntity.ok(savedUser);
     }

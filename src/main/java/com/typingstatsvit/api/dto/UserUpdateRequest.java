@@ -9,8 +9,8 @@ public record UserUpdateRequest(
         String displayName,
 
         @Pattern(
-                regexp = "^[A-Za-z0-9._%+-]+@vitstudent\\.ac\\.in$",
-                message = "Must be a valid @vit.ac.in email address"
+                regexp = "^[A-Za-z0-9._%+-]+@vit(ap)?student\\.ac\\.in$",
+                message = "Must be a valid @vitstudent.ac.in or @vitapstudent.ac.in email address"
         )
         String collegeEmail,
 

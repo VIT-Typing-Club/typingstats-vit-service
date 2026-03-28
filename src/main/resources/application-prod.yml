@@ -5,3 +5,7 @@ spring:
 
   jpa:
     show-sql: false
+
+application:
+  frontend:
+    url: https://stats.typingclubvit.com

@@ -30,3 +30,16 @@ jobs:
             --env-file /srv/typingstats/service/.env \
             --restart unless-stopped \
             typingstats-service
+
+      - name: Notify Discord
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          COMMITS=$(git log -3 --pretty=format:"- %s (%an)")
+
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d "{
+            \"content\": \" **Deploy $STATUS**\n\n ${{ github.repository }}\n https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n\n Commits:\n$COMMITS\"
+          }" \
+          ${{ secrets.DISCORD_WEBHOOK }}

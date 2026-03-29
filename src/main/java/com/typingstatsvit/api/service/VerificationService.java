@@ -108,26 +108,58 @@ public class VerificationService {
         try {
             response = typeggClient.getUserProfile(submittedUsername);
         } catch (Exception e) {
-            log.error("Typegg profile not found for user {}", submittedUsername);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "TypeGG profile not found. Please check the username.");
+            log.error("TypeGG profile not found for user {}", submittedUsername);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "TypeGG profile not found. Please check the username."
+            );
         }
 
         if (response == null || response.userId() == null) {
-            log.error("Invalid response from typegg api");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid response from TypeGG API.");
+            log.error("Invalid response from TypeGG api");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Invalid response from TypeGG API."
+            );
         }
 
-        String discordName = user.getUsername();
-        boolean usernameMatches = discordName.equalsIgnoreCase(response.username());
+        if (!Boolean.TRUE.equals(user.getMtVerified())) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "You must link and verify your Monkeytype account on our platform first."
+            );
+        }
 
-        if (!usernameMatches) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Verification failed. Your TypeGG username must match your Discord username (" + discordName + ").");
+        if (user.getMtUrl() == null || user.getMtUrl().isBlank()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "You must set your Monkeytype username before verification."
+            );
+        }
+
+        var linkedAccounts = response.linkedAccounts();
+
+        boolean monkeytypeMatched = linkedAccounts != null &&
+                linkedAccounts.stream().anyMatch(account ->
+                        "monkeytype".equalsIgnoreCase(account.platform()) &&
+                                Boolean.TRUE.equals(account.isVerified()) &&
+                                account.platformUserId().equalsIgnoreCase(user.getMtUrl())
+                );
+
+        if (!monkeytypeMatched) {
+            log.warn("Monkeytype verification failed for user {} (mt: {})",
+                    user.getDiscordId(), user.getMtUrl());
+
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "Verification failed. Your Monkeytype account must be linked and verified on TypeGG."
+            );
         }
 
         user.setTypeggId(response.userId());
         user.setTypeggUsername(response.username());
         userRepository.save(user);
-        log.info("verified typegg profile for {}", user.getDiscordId());
+
+        log.info("Verified typegg profile for {} (mt verified)", user.getDiscordId());
     }
 }

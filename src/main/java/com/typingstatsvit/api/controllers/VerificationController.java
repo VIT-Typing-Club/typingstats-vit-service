@@ -55,11 +55,13 @@ public class VerificationController {
     }
 
     @PostMapping("/typegg")
-    public ResponseEntity<Map<String, String>> verifyTypegg(
-            @AuthenticationPrincipal User currentUser,
-            @Valid @RequestBody TypeggVerifyRequest request
+    public ResponseEntity<Map<String, String>> linkTypeggProfile(
+            @Valid @RequestBody TypeggVerifyRequest request,
+            @AuthenticationPrincipal User currentUser
     ) {
-        verificationService.verifyTypeggProfile(currentUser, request.username());
-        return ResponseEntity.ok(Map.of("message", "TypeGG account linked successfully"));
+        verificationService.verifyTypeggProfile(currentUser, request.typeggUsername());
+        return ResponseEntity.ok(Map.of(
+                "message", "TypeGG profile successfully linked and verified."
+        ));
     }
 }

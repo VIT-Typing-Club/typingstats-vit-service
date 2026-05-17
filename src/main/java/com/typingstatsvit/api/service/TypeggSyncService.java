@@ -154,6 +154,7 @@ public class TypeggSyncService {
         List<TypeggScore> scores = typeggScoreRepository.findByQuoteOrderByWpmDesc(activeQuote);
 
         DailyQuoteDto quoteDto = new DailyQuoteDto(
+                activeQuote.getQuoteId(),
                 activeQuote.getText(),
                 activeQuote.getSourceTitle(),
                 activeQuote.getDifficulty(),

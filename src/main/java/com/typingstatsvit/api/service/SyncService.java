@@ -10,6 +10,8 @@ import com.typingstatsvit.api.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -61,7 +63,8 @@ public class SyncService {
     @Scheduled(fixedDelay = 600000)
     @Transactional
     public void performAutoSyncTrickle() {
-        List<User> staleUsers = userRepository.findTop5ByMtVerifiedTrueAndCollegeVerifiedTrueOrderByLastAutoSyncAsc();
+        Pageable pageable = PageRequest.of(0, 5);
+        List<User> staleUsers = userRepository.findUsersForAutoSync(pageable);
         boolean anyDataChanged = false;
 
         log.info("Starting auto-sync trickle for {} users...", staleUsers.size());

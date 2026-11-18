@@ -142,6 +142,16 @@ public class TypeggSyncService {
         }
     }
 
+    @Transactional
+    public void performPublicSync(String discordId) {
+        User user = userRepository.findById(discordId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "User not found."
+                ));
+
+        performManualSync(user);
+    }
+
     @Transactional(readOnly = true)
     public DailyLeaderboardResponse getDailyLeaderboard() {
         Optional<DailyQuote> activeQuoteOpt = dailyQuoteRepository.findActiveQuote(Instant.now());

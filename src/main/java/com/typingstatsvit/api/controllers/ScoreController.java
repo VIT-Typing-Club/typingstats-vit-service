@@ -6,12 +6,10 @@ import com.typingstatsvit.api.entity.TestType;
 import com.typingstatsvit.api.service.ScoreService;
 import com.typingstatsvit.api.service.TypeggSyncService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/scores")
@@ -45,5 +43,16 @@ public class ScoreController {
         }
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/typegg/sync/{discordId}")
+    public ResponseEntity<Map<String, String>> syncTypeggScoresPublic(
+            @PathVariable String discordId) {
+
+        typeggSyncService.performPublicSync(discordId);
+
+        return ResponseEntity.ok(Map.of(
+                "message", "TypeGG daily score successfully synced"
+        ));
     }
 }

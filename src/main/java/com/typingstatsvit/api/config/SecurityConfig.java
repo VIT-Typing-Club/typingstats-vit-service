@@ -56,6 +56,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api/scores/leaderboard",
                                 "/api/scores/typegg/daily",
+                                "/api/scores/typegg/sync/**",
                                 "/api/users/{username}"
                         ).permitAll()
                         .requestMatchers("/api/admin/**").access((authenticationSupplier, requestContext) -> {

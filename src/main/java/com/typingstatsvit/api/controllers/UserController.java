@@ -136,6 +136,7 @@ public class UserController {
     public ResponseEntity<PublicProfileDto> getPublicProfile(@PathVariable String username) {
         return userRepository.findByUsername(username)
                 .map(user -> new PublicProfileDto(
+                        user.getDiscordId(),
                         user.getDisplayName(),
                         user.getUsername(),
                         user.getAvatarUrl(),

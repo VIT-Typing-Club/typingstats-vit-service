@@ -1,6 +1,7 @@
 package com.typingstatsvit.api.dto;
 
 public record PublicProfileDto(
+        String discordId,
         String displayName,
         String discordUsername,
         String avatarUrl,

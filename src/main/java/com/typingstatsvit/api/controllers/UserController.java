@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,6 +38,11 @@ public class UserController {
         this.typeggSyncService = typeggSyncService;
     }
 
+    private String normalize(String value) {
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
+
     @GetMapping("/@me")
     public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal User currentUser) {
         return ResponseEntity.ok(currentUser);
@@ -49,35 +55,47 @@ public class UserController {
             @Valid @RequestBody UserUpdateRequest updateRequest
     ) {
         if (updateRequest.displayName() != null) {
-            currentUser.setDisplayName(updateRequest.displayName());
+            currentUser.setDisplayName(
+                    normalize(updateRequest.displayName())
+            );
         }
 
-        if (updateRequest.collegeEmail() != null && !updateRequest.collegeEmail().equals(currentUser.getCollegeEmail())) {
-            currentUser.setCollegeEmail(updateRequest.collegeEmail());
-            currentUser.setCollegeVerified(false);
+        if (updateRequest.collegeEmail() != null) {
+            String value = normalize(updateRequest.collegeEmail());
+
+            if (!Objects.equals(value, currentUser.getCollegeEmail())) {
+                currentUser.setCollegeEmail(value);
+                currentUser.setCollegeVerified(false);
+            }
         }
 
-        if (updateRequest.mtUrl() != null && !updateRequest.mtUrl().equals(currentUser.getMtUrl())) {
-            currentUser.setMtUrl(updateRequest.mtUrl());
-            currentUser.setMtVerified(false);
+        if (updateRequest.mtUrl() != null) {
+            String value = normalize(updateRequest.mtUrl());
+
+            if (!Objects.equals(value, currentUser.getMtUrl())) {
+                currentUser.setMtUrl(value);
+                currentUser.setMtVerified(false);
+            }
         }
 
         if (updateRequest.linkedinUrl() != null) {
-            currentUser.setLinkedinUrl(updateRequest.linkedinUrl());
+            currentUser.setLinkedinUrl(normalize(updateRequest.linkedinUrl()));
         }
 
         if (updateRequest.githubUrl() != null) {
-            currentUser.setGithubUrl(updateRequest.githubUrl());
+            currentUser.setGithubUrl(normalize(updateRequest.githubUrl()));
         }
 
         if (updateRequest.instagramUrl() != null) {
-            currentUser.setInstagramUrl(updateRequest.instagramUrl());
+            currentUser.setInstagramUrl(normalize(updateRequest.instagramUrl()));
         }
 
         if (updateRequest.xUrl() != null) {
-            currentUser.setXUrl(updateRequest.xUrl());
+            currentUser.setXUrl(normalize(updateRequest.xUrl()));
         }
+
         User savedUser = userRepository.save(currentUser);
+
         return ResponseEntity.ok(savedUser);
     }
 
